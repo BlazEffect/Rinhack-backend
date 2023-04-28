@@ -9,16 +9,16 @@ import docx2txt
 class documentToMindmap(APIView):
     def get(self, request):
         global text, result
-        document_path = 'static/data/2.docx'
+        document_path = 'static/data/4.docx'
         errorExistence = False
-        errorCode = 0
+        errorLabel = 0
         if not os.path.isfile(document_path):
             errorExistence = True
-            errorCode = 902
+            errorLabel = 'unableToFetchFilePath'
         else:
             file_ext = re.search(r'\.(\w+)$', document_path)
             if file_ext is None or file_ext.group(1) != 'docx':
-                errorCode = 901
+                errorLabel = 'unableToDefineFileFormat'
                 errorExistence = True
             text = docx2txt.process(document_path)
             lines = text.split('\n')
@@ -59,5 +59,5 @@ class documentToMindmap(APIView):
         if not errorExistence:
             result = processText(text)
         elif errorExistence:
-            result = {"Error": str(errorCode)} #this line is only for DEBUG purposes/эта строчка написана только для целей отладки на этапе разработки
+            result = {"Error": errorLabel} #this line is only for DEBUG purposes/эта строчка написана только для целей отладки на этапе разработки
         return Response(result)
