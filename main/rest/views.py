@@ -11,13 +11,14 @@ class documentToMindmap(APIView):
         global text, result
         document_path = 'static/data/2.docx'
         errorExistence = False
+        errorCode = 0
         if not os.path.isfile(document_path):
             errorExistence = True
-            result = {"Error": "902", "Description": "File does not exist"}
+            errorCode = 902
         else:
             file_ext = re.search(r'\.(\w+)$', document_path)
             if file_ext is None or file_ext.group(1) != 'docx':
-                result = {"Error": "901", "Description": "File has wrong format or not exist"}
+                errorCode = 901
                 errorExistence = True
             text = docx2txt.process(document_path)
             lines = text.split('\n')
@@ -57,4 +58,6 @@ class documentToMindmap(APIView):
             return docArray
         if not errorExistence:
             result = processText(text)
+        elif errorExistence:
+            result = {"Error": str(errorCode)} #this line is only for DEBUG purposes/эта строчка написана только для целей отладки на этапе разработки
         return Response(result)
