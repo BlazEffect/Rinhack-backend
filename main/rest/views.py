@@ -9,7 +9,7 @@ import docx2txt
 class documentToMindmap(APIView):
     def get(self, request):
         global text, result
-        document_path = 'static/data/4.docx'
+        document_path = 'static/data/2.docx'
         errorExistence = False
         errorLabel = 0
         if not os.path.isfile(document_path):
