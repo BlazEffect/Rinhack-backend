@@ -16,10 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
 from rest.views import documentToMindmap
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/test/', documentToMindmap.as_view())
+    path('api/test/', documentToMindmap.as_view()),
 ]

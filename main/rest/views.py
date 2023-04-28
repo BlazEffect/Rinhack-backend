@@ -8,31 +8,32 @@ import docx2txt
 # Create your views here.
 class documentToMindmap(APIView):
     def get(self, request):
+        global text, result
         document_path = 'static/data/2.docx'
+        errorExistence = False
         if not os.path.isfile(document_path):
-            text = ('Fatal Error: File not found')
+            errorExistence = True
+            result = {"Error": "902", "Description": "File does not exist"}
         else:
             file_ext = re.search(r'\.(\w+)$', document_path)
             if file_ext is None or file_ext.group(1) != 'docx':
-                text = 'Fatal Error: Invalid File Format'
+                result = {"Error": "901", "Description": "File has wrong format or not exist"}
+                errorExistence = True
             text = docx2txt.process(document_path)
             lines = text.split('\n')
             lines = [line.strip() for line in lines]
             text = '\n'.join(lines)
             text = re.sub(r'\n\s*\n', '\n', text)
             text = text.replace('{code-section}', '<per>').replace('{/code-section}', '</per>')
-
-        print(text)
-
         def processText(text):
-            lines = text.strip().split("\n")
-            result = {"items": []}
-            stack = [(result, 0)]
+            strippedText = text.strip().split("\n")
+            docArray = {"items": []}
+            stack = [(docArray, 0)]
 
             item = None
             level = None
 
-            for line in lines:
+            for line in strippedText:
                 match = re.match(r"^(\d+(\.\d+)*)\.", line)
                 if match:
                     title = line[len(match.group(0)):].strip()
@@ -53,5 +54,7 @@ class documentToMindmap(APIView):
                         item["text"] += "<br>"
                     item["text"] += line.strip()
 
-            return result
-        return Response(processText(text))
+            return docArray
+        if not errorExistence:
+            result = processText(text)
+        return Response(result)
