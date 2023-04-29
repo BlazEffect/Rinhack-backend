@@ -89,14 +89,18 @@ class refreshMindMap(APIView):
             text = '\n'.join(lines)
             text = re.sub(r'\n\s*\n', '\n', text)
             text = text.replace('{code-section}', '<per>').replace('{/code-section}', '</per>')
-
             def processText(text):
                 strippedText = text.strip().split("\n")
-                test = {
-
+                docArray = {
+                    "nodeData": [
+                        {
+                            'topic': 'Ядро',
+                            'text': '',
+                            "children": []
+                        }
+                    ]
                 }
-                docArray = {"children": []}
-                stack = [(docArray, 0)]
+                stack = [(docArray["nodeData"][0], 0)]
 
                 item = None
                 level = None
