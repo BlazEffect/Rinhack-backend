@@ -1,6 +1,7 @@
 from django.core.files.storage import FileSystemStorage
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import docx2txt
 import re
 import os
 
@@ -15,10 +16,10 @@ def saveFile(file):
 
 # Create your views here.
 class documentToMindmap(APIView):
-    def post(self, request):
+    def get(self, request):
         global text, result
-        filename = saveFile(request)
-        document_path = 'media/' + filename
+        # filename = saveFile(request)
+        document_path = 'media/' + '2.docx'
         errorExistence = False
         errorLabel = 0
         if not os.path.isfile(document_path):
@@ -35,19 +36,19 @@ class documentToMindmap(APIView):
             text = '\n'.join(lines)
             text = re.sub(r'\n\s*\n', '\n', text)
             text = text.replace('{code-section}', '<per>').replace('{/code-section}', '</per>')
+
         def processText(text):
             strippedText = text.strip().split("\n")
-            test = {"children": []}
             docArray = {
                 "nodeData": [
                     {
                         'topic': 'Ядро',
                         'text': '',
+                        "children": []
                     }
                 ]
             }
-            #docArray = {"children": []}
-            stack = [(test, 0)]
+            stack = [(docArray["nodeData"][0], 0)]
 
             item = None
             level = None
@@ -59,13 +60,13 @@ class documentToMindmap(APIView):
                     new_level = len(match.group(1).split('.'))
                     if item is None or new_level > level:
                         item = {"topic": title, "text": "", "children": []}
-                        stack[0][0]["children"].append(item)
+                        stack[-1][0]["children"].append(item)
                         stack.append((item, new_level))
                     else:
                         item = {"topic": title, "text": "", "children": []}
                         while stack[-1][1] >= new_level:
                             stack.pop()
-                        stack[0][0]["children"].append(item)
+                        stack[-1][0]["children"].append(item)
                         stack.append((item, new_level))
                     level = new_level
                 elif item is not None:
@@ -73,8 +74,8 @@ class documentToMindmap(APIView):
                         item["text"] += "<br>"
                     item["text"] += line.strip()
 
-            docArray['nodeData'] += {'children': stack}
             return docArray
+
         if not errorExistence:
             result = processText(text)
         elif errorExistence:
