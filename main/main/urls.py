@@ -20,5 +20,5 @@ from rest.views import documentToMindmap
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/getdocs', documentToMindmap.as_view()),
+    path('api/getdocx', documentToMindmap.as_view())
 ]

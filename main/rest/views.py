@@ -1,3 +1,4 @@
+from django.core.files.storage import FileSystemStorage
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import re
@@ -5,11 +6,20 @@ import os
 import docx2txt
 
 
+def saveFile(file):
+    fileName = [i[0] for i in file.FILES]
+    test = keys = list(file.FILES.keys())
+    file = file.FILES[test[0]]
+    fs = FileSystemStorage()
+    filename = fs.save(file.name, file)
+    return file.name
+
 # Create your views here.
 class documentToMindmap(APIView):
-    def get(self, request):
+    def post(self, request):
         global text, result
-        document_path = 'static/data/2.docx'
+        filename = saveFile(request)
+        document_path = 'media/' + filename
         errorExistence = False
         errorLabel = 0
         if not os.path.isfile(document_path):
@@ -28,7 +38,10 @@ class documentToMindmap(APIView):
             text = text.replace('{code-section}', '<per>').replace('{/code-section}', '</per>')
         def processText(text):
             strippedText = text.strip().split("\n")
-            docArray = {"items": []}
+            test = {
+
+            }
+            docArray = {"children": []}
             stack = [(docArray, 0)]
 
             item = None
@@ -40,14 +53,14 @@ class documentToMindmap(APIView):
                     title = line[len(match.group(0)):].strip()
                     new_level = len(match.group(1).split('.'))
                     if item is None or new_level > level:
-                        item = {"title": title, "text": "", "items": []}
-                        stack[-1][0]["items"].append(item)
+                        item = {"topic": title, "text": "", "children": []}
+                        stack[-1][0]["children"].append(item)
                         stack.append((item, new_level))
                     else:
-                        item = {"title": title, "text": "", "items": []}
+                        item = {"topic": title, "text": "", "children": []}
                         while stack[-1][1] >= new_level:
                             stack.pop()
-                        stack[-1][0]["items"].append(item)
+                        stack[-1][0]["children"].append(item)
                         stack.append((item, new_level))
                     level = new_level
                 elif item is not None:
