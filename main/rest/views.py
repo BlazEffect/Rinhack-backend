@@ -97,9 +97,9 @@ class refreshMindMap(APIView):
             if text == '':
                 errorLabel = 'inputFileIsEmpty'
                 errorExistence = True
-            elif text[:2] != '1.':
-                errorLabel = 'noTreeLikeStructureFound'
-                errorExistence = True
+            # elif text[:2] != '1.':
+            #     errorLabel = 'noTreeLikeStructureFound'
+            #     errorExistence = True
 
             def processText(text):
                 strippedText = text.strip().split("\n")
