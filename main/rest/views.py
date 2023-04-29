@@ -16,7 +16,7 @@ def saveFile(file):
 
 # Create your views here.
 class documentToMindmap(APIView):
-    def get(self, request):
+    def post(self, request):
         global text, result
         # filename = saveFile(request)
         document_path = 'media/' + '2.docx'
@@ -40,15 +40,14 @@ class documentToMindmap(APIView):
         def processText(text):
             strippedText = text.strip().split("\n")
             docArray = {
-                "nodeData": [
+                "nodeData":
                     {
                         'topic': 'Ядро',
                         'text': '',
                         "children": []
                     }
-                ]
             }
-            stack = [(docArray["nodeData"][0], 0)]
+            stack = [(docArray["nodeData"], 0)]
 
             item = None
             level = None
@@ -83,7 +82,9 @@ class documentToMindmap(APIView):
         return Response(result)
 class refreshMindMap(APIView):
         def post(self, request):
-            text = request
+            text = ''
+            for key, value in request.POST.items():
+               text = key[5:]
             lines = text.split('\n')
             lines = [line.strip() for line in lines]
             text = '\n'.join(lines)
@@ -92,15 +93,15 @@ class refreshMindMap(APIView):
             def processText(text):
                 strippedText = text.strip().split("\n")
                 docArray = {
-                    "nodeData": [
+                    "nodeData":
                         {
                             'topic': 'Ядро',
                             'text': '',
                             "children": []
                         }
-                    ]
+
                 }
-                stack = [(docArray["nodeData"][0], 0)]
+                stack = [(docArray["nodeData"], 0)]
 
                 item = None
                 level = None
