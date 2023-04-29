@@ -18,8 +18,8 @@ def saveFile(file):
 class documentToMindmap(APIView):
     def post(self, request):
         global text, result
-        # filename = saveFile(request)
-        document_path = 'media/' + '2.docx'
+        filename = saveFile(request)
+        document_path = 'media/' + filename
         errorExistence = False
         errorLabel = 0
         if not os.path.isfile(document_path):
