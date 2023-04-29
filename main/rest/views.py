@@ -40,12 +40,17 @@ class documentToMindmap(APIView):
         def processText(text):
             strippedText = text.strip().split("\n")
             docArray = {
+                "text": text.replace('\n', '<br>'),
                 "nodeData":
                     {
                         'topic': 'Ядро',
                         'text': '',
                         "children": []
                     }
+            }
+            text = {
+                'dfd': 'trtr',
+                'tree': 'nodedata',
             }
             stack = [(docArray["nodeData"], 0)]
 
