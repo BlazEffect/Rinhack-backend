@@ -87,7 +87,9 @@ class refreshMindMap(APIView):
             errorLabel = 0
             text = ''
             for key, value in request.POST.items():
-               text = key[4:]
+               text = key
+
+            print(text)
             # text = docx2txt.process('media/2.docx')
             lines = text.split('\n')
             lines = [line.strip() for line in lines]
