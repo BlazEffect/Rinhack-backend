@@ -82,14 +82,24 @@ class documentToMindmap(APIView):
         return Response(result)
 class refreshMindMap(APIView):
         def post(self, request):
+            errorExistence = False
+            errorLabel = 0
             text = ''
             for key, value in request.POST.items():
                text = key[5:]
+            # text = docx2txt.process('media/2.docx')
             lines = text.split('\n')
             lines = [line.strip() for line in lines]
             text = '\n'.join(lines)
             text = re.sub(r'\n\s*\n', '\n', text)
             text = text.replace('{code-section}', '<per>').replace('{/code-section}', '</per>')
+            if text == '':
+                errorLabel = 'inputFileIsEmpty'
+                errorExistence = True
+            elif text[:2] != '1.':
+                errorLabel = 'noTreeLikeStructureFound'
+                errorExistence = True
+
             def processText(text):
                 strippedText = text.strip().split("\n")
                 docArray = {
@@ -128,10 +138,9 @@ class refreshMindMap(APIView):
                         item["text"] += line.strip()
 
                 return docArray
-            result = processText(text)
-            # if not errorExistence:
-            #     result = processText(text)
-            # elif errorExistence:
-            #     result = {
-            #         "Error": errorLabel}  # this line is only for DEBUG purposes/эта строчка написана только для целей отладки на этапе разработки
+            if not errorExistence:
+                result = processText(text)
+            elif errorExistence:
+                result = {
+                    "Error": errorLabel}  # this line is only for DEBUG purposes/эта строчка написана только для целей отладки на этапе разработки
             return Response(result)
