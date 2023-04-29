@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest.views import documentToMindmap
+from rest.views import refreshMindMap
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/getdocx', documentToMindmap.as_view())
+    path('api/getdocx', documentToMindmap.as_view()),
+    path('api/refreshmindmap', refreshMindMap.as_view())
 ]
